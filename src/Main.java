@@ -1,0 +1,32 @@
+import article.Article;
+import retailer.impl.Billa;
+import retailer.impl.Penny;
+import retailer.impl.Retailers;
+import shopping.cart.ShoppingCart;
+import shopping.list.ShoppingList;
+import shopping.list.impl.SimpleShoppingList;
+
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        final ShoppingList shoppingList = new SimpleShoppingList();
+        shoppingList.addArticle("Milch");
+        shoppingList.addArticle("Butter");
+        shoppingList.addArticle("Sauerrahm");
+        shoppingList.addArticle("Karotten");
+        shoppingList.addArticle("Cola");
+        Retailers.add(new Billa());
+        Retailers.add(new Penny());
+        final List<ShoppingCart> shoppingCarts =
+            Retailers.compileCarts(shoppingList);
+        for (final ShoppingCart c : shoppingCarts
+        ) {
+            System.out.println(c.getRetailer());
+            for (final Article a : c) {
+                System.out.println(a);
+            }
+            System.out.printf("%.2f € \n", c.getTotal());
+        }
+    }
+}
