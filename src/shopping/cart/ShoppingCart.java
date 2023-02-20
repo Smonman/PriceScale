@@ -11,7 +11,7 @@ import retailer.Retailer;
  *
  * @see shopping.list.ShoppingList
  */
-public interface ShoppingCart extends Iterable<Article> {
+public interface ShoppingCart extends Iterable<Article>, Comparable<ShoppingCart> {
 
     /**
      * Add another article to this.
@@ -35,4 +35,12 @@ public interface ShoppingCart extends Iterable<Article> {
      * @return the associated retailer
      */
     Retailer getRetailer();
+
+    /**
+     * Returns whether this shopping cart is complete or not.
+     *
+     * <p>A shopping cart is complete if it contains no {@code null} items.</p>
+     * @return {@code true} if it is complete, else {@code false}
+     */
+    boolean isComplete();
 }

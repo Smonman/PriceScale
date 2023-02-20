@@ -43,4 +43,15 @@ public abstract class ShoppingCartBase implements ShoppingCart {
     public Iterator<Article> iterator() {
         return articles.iterator();
     }
+
+    @Override
+    public boolean isComplete() {
+        return articles.stream()
+                       .noneMatch(Objects::isNull);
+    }
+
+    @Override
+    public int compareTo(ShoppingCart o) {
+        return Double.compare(getTotal(), o.getTotal());
+    }
 }

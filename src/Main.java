@@ -7,6 +7,8 @@ import shopping.cart.ShoppingCart;
 import shopping.list.ShoppingList;
 import shopping.list.impl.SimpleShoppingList;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class Main {
@@ -22,6 +24,7 @@ public class Main {
         Retailers.add(new Spar());
         final List<ShoppingCart> shoppingCarts =
             Retailers.compileCarts(shoppingList);
+        Collections.sort(shoppingCarts);
         for (final ShoppingCart c : shoppingCarts
         ) {
             System.out.println(c.getRetailer());
