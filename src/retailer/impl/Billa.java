@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import selector.ArticleSelectors;
+import util.NumberParser;
 import util.exception.ParsingException;
 
 import java.lang.invoke.MethodHandles;
@@ -14,8 +15,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * This is a concrete implementation of base retailer.
@@ -183,28 +182,17 @@ public class Billa extends BaseRetailer {
                 priceObject.has("unit") && !priceObject.isNull("unit");
             if (hasKiloPrice) {
                 LOGGER.debug("has kilo price");
-
                 final String kiloPriceString = priceObject.getString("unit");
-                final Pattern pattern = Pattern.compile("\\d+[\\.|,]\\d+");
-                final Matcher matcher = pattern.matcher(kiloPriceString);
                 try {
-                    if (matcher.find()) {
-                        kiloPrice =
-                            Double.parseDouble(matcher.group()
-                                                      .replace(",", "."));
-                    } else {
-                        LOGGER.debug("cannot find kilo price, using price");
-
-                        kiloPrice = price;
-                    }
-                } catch (NumberFormatException e) {
-                    LOGGER.error("cannot parse kilo price", e);
-                    LOGGER.info("using price");
+                    kiloPrice =
+                        NumberParser.getDoubleFromString(kiloPriceString);
+                } catch (ParsingException | NullPointerException e) {
+                    LOGGER.error("cannot parse kilo price string", e);
+                    LOGGER.info("using price as kilo price");
                     kiloPrice = price;
                 }
             } else {
                 LOGGER.debug("does not have kilo price, using price");
-
                 kiloPrice = price;
             }
             final String id = articleObject.getString("articleId");

@@ -8,6 +8,7 @@ import retailer.Retailer;
  *
  * <p>A shopping cart is not the same as a shopping list. A shopping cart is a
  * collection of the actual available items, not the wanted items.</p>
+ *
  * @see shopping.list.ShoppingList
  */
 public interface ShoppingCart extends Iterable<Article> {

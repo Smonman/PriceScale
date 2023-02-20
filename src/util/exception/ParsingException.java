@@ -3,7 +3,8 @@ package util.exception;
 /**
  * This is an exception.
  *
- * <p>This exception is throws, when something cannot be parsed as expected.</p>
+ * <p>This exception is throws, when something cannot be parsed as
+ * expected.</p>
  */
 public class ParsingException extends Exception {
 

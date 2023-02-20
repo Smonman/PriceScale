@@ -2,6 +2,7 @@ import article.Article;
 import retailer.impl.Billa;
 import retailer.impl.Penny;
 import retailer.impl.Retailers;
+import retailer.impl.Spar;
 import shopping.cart.ShoppingCart;
 import shopping.list.ShoppingList;
 import shopping.list.impl.SimpleShoppingList;
@@ -18,6 +19,7 @@ public class Main {
         shoppingList.addArticle("Cola");
         Retailers.add(new Billa());
         Retailers.add(new Penny());
+        Retailers.add(new Spar());
         final List<ShoppingCart> shoppingCarts =
             Retailers.compileCarts(shoppingList);
         for (final ShoppingCart c : shoppingCarts

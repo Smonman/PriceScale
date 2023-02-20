@@ -34,6 +34,11 @@ public abstract class BaseRetailer implements Retailer {
     }
 
     @Override
+    public final int getId() {
+        return id;
+    }
+
+    @Override
     public final void setId(int id) {
         this.id = id;
     }
@@ -41,11 +46,6 @@ public abstract class BaseRetailer implements Retailer {
     @Override
     public Article call() throws Exception {
         return lookup();
-    }
-
-    @Override
-    public final int getId() {
-        return id;
     }
 
     @Override

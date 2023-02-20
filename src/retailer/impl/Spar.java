@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import selector.ArticleSelectors;
+import util.NumberParser;
 import util.exception.ParsingException;
 
 import java.lang.invoke.MethodHandles;
@@ -18,7 +19,7 @@ import java.util.List;
 /**
  * This is a concrete implementation of base retailer.
  */
-public class Penny extends BaseRetailer {
+public class Spar extends BaseRetailer {
 
     private static final Logger
         LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -26,33 +27,34 @@ public class Penny extends BaseRetailer {
     /**
      * This is the endpoint pattern for the product search.
      *
-     * <p>The pattern has to be called with the query string. It is configured
-     * to return 20 results.</p>
+     * <p>The pattern has to be called with the query string, and this endpoint
+     * is configured to return 20 results</p>
      */
     private static final String SEARCH_ENDPOINT_PATTERN =
-        "https://www.penny.at/api/products/search/%s?pageSize=20";
+        "https://search-spar.spar-ics.com/fact-finder/rest/v4/search/products_lmos_at?query=%s&page=1&hitsPerPage=20&useAsn=false&substringFilter=title%3A!product-number";
 
     /**
-     * This is the endpoint for details for a specific product.
+     * This is the product URL pattern.
      *
-     * <p>This pattern has to be called with the product id.</p>
+     * <p>This is the URL to find a given article. This pattern has to be
+     * called with the product id.</p>
      */
     private static final String ARTICLE_URL_PATTERN =
-        "https://www.penny.at/produkte/%s";
+        "https://www.interspar.at/shop/lebensmittel%s";
 
-    public Penny() {
-        super("Penny");
+    public Spar() {
+        super("Spar");
     }
 
     private String getSearchEndpoint(final String encodedQuery) {
-        return String.format(SEARCH_ENDPOINT_PATTERN, encodedQuery);
+        return SEARCH_ENDPOINT_PATTERN.replace("%s", encodedQuery);
     }
 
     /**
      * Searches for the given query.
      *
      * @param query the search query
-     * @return the search results as a string
+     * @return the search results as a string.
      */
     private String search(final String query) {
         LOGGER.trace("search(String)");
@@ -77,7 +79,7 @@ public class Penny extends BaseRetailer {
 
         try {
             final JSONObject searchResultObject = new JSONObject(searchResult);
-            return searchResultObject.getJSONArray("results");
+            return searchResultObject.getJSONArray("hits");
         } catch (JSONException e) {
             LOGGER.error("cannot parse JSON", e);
             throw new ParsingException(e);
@@ -96,7 +98,8 @@ public class Penny extends BaseRetailer {
         final List<Article> articles = new LinkedList<>();
         for (final Object o : articleResources) {
             try {
-                articles.add(parseArticleResource((JSONObject) o));
+                articles.add(parseArticleResource(((JSONObject) o).getJSONObject(
+                    "masterValues")));
             } catch (ParsingException | JSONException | ClassCastException e) {
                 LOGGER.error("cannot parse article", e);
                 LOGGER.info("skipping URL");
@@ -121,14 +124,19 @@ public class Penny extends BaseRetailer {
         double kiloPrice;
         String url;
         try {
-            final JSONObject priceObject =
-                articleObject.getJSONObject("price").getJSONObject("regular");
             name = articleObject.getString("name");
-            price = priceObject.getDouble("value") / 100.0;
-            kiloPrice =
-                priceObject.getDouble("perStandardizedQuantity") / 100.0;
-            final String id = articleObject.getString("slug");
-            url = String.format(ARTICLE_URL_PATTERN, id);
+            price = articleObject.getDouble("price");
+            final String kiloPriceString =
+                articleObject.getString("price-per-unit");
+            try {
+                kiloPrice = NumberParser.getDoubleFromString(kiloPriceString);
+            } catch (ParsingException | NullPointerException e) {
+                LOGGER.error("cannot parse kilo price string", e);
+                LOGGER.info("using price as kilo price");
+                kiloPrice = price;
+            }
+            final String urlPart = articleObject.getString("url");
+            url = String.format(ARTICLE_URL_PATTERN, urlPart);
         } catch (JSONException e) {
             LOGGER.error("cannot parse article", e);
             throw new ParsingException(e);
