@@ -1,4 +1,5 @@
 import article.Article;
+import gui.Window;
 import retailer.impl.Billa;
 import retailer.impl.Penny;
 import retailer.impl.Retailers;
@@ -7,12 +8,13 @@ import shopping.cart.ShoppingCart;
 import shopping.list.ShoppingList;
 import shopping.list.impl.SimpleShoppingList;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
+        final Window window = new Window();
+
         final ShoppingList shoppingList = new SimpleShoppingList();
         shoppingList.addArticle("Milch");
         shoppingList.addArticle("Butter");
@@ -25,6 +27,9 @@ public class Main {
         final List<ShoppingCart> shoppingCarts =
             Retailers.compileCarts(shoppingList);
         Collections.sort(shoppingCarts);
+
+        window.setTableData(shoppingList, shoppingCarts);
+
         for (final ShoppingCart c : shoppingCarts
         ) {
             System.out.println(c.getRetailer());

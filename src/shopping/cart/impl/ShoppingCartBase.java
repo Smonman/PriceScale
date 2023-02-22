@@ -40,14 +40,14 @@ public abstract class ShoppingCartBase implements ShoppingCart {
     }
 
     @Override
-    public Iterator<Article> iterator() {
-        return articles.iterator();
-    }
-
-    @Override
     public boolean isComplete() {
         return articles.stream()
                        .noneMatch(Objects::isNull);
+    }
+
+    @Override
+    public Iterator<Article> iterator() {
+        return articles.iterator();
     }
 
     @Override

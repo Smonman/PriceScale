@@ -11,8 +11,7 @@ import java.util.List;
  * This is a utility class.
  *
  * <p>This class provides functionality to dynamically select a specific
- * article
- * from a given list based on the given selector.</p>
+ * article from a given list based on the given selector.</p>
  */
 public final class ArticleSelectors {
     private ArticleSelectors() {
